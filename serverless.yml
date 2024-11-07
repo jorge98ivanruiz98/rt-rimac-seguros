@@ -1,0 +1,37 @@
+
+service: starwars-api
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+
+functions:
+  getCharacter:
+    handler: handler.getCharacter
+    events:
+      - http:
+          path: characters/{id}
+          method: get
+  createCharacter:
+    handler: handler.createCharacter
+    events:
+      - http:
+          path: characters
+          method: post
+
+resources:
+  Resources:
+    CharactersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: RIMAC-PT-DEV
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
