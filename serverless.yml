@@ -1,37 +1,85 @@
-
-service: starwars-api
+service: ${file(./config.json):Parameters.projectValue}
 
 provider:
   name: aws
   runtime: nodejs18.x
   region: us-east-1
+  timeout: ${file(./config.json):Parameters.TIMEOUT}
+  memorySize: ${file(./config.json):Parameters.MemorySize}
+  environment:
+    SWAPI_BASE_URL: ${file(./config.json):Parameters.SWAPI_URL}
+    DYNAMODB_TABLE_NAME: ${file(./config.json):Parameters.DYNAMODB_TABLE}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+      Resource:
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_NAME}"
+
+package:
+  include:
+    - src/**
 
 functions:
-  getCharacter:
-    handler: handler.getCharacter
+  getPeopleFunction:
+    name: ${file(./config.json):Parameters.LambdaFunctionPR-GetItem}
+    handler: src/handlers/getPeople.handler
+    timeout: ${self:provider.timeout}
+    memorySize: ${self:provider.memorySize}
+    environment:
+      TABLE_NAME: ${self:provider.environment.DYNAMODB_TABLE_NAME}
+    tags:
+      Project: ${file(./config.json):Parameters.projectValue}
+    package:
+      include:
+        - src/handlers/getPeople.js
+        - src/services/**
+        - src/utils/**
     events:
       - http:
-          path: characters/{id}
+          path: people
           method: get
-  createCharacter:
-    handler: handler.createCharacter
+          cors: true
+
+  createPeopleFunction:
+    name: ${file(./config.json):Parameters.LambdaFunctionPR-CreateItem}
+    handler: src/handlers/createPeople.handler
+    timeout: ${self:provider.timeout}
+    memorySize: ${self:provider.memorySize}
+    environment:
+      TABLE_NAME: ${self:provider.environment.DYNAMODB_TABLE_NAME}
+    tags:
+      Project: ${file(./config.json):Parameters.projectValue}
+    package:
+      include:
+        - src/handlers/createPeople.js
+        - src/services/**
+        - src/utils/**
     events:
       - http:
-          path: characters
+          path: people
           method: post
+          cors: true
 
 resources:
   Resources:
-    CharactersTable:
+    PeopleDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: RIMAC-PT-DEV
+        TableName: ${self:provider.environment.DYNAMODB_TABLE_NAME}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+        BillingMode: PAY_PER_REQUEST
+        Tags:
+          - Key: Project
+            Value: ${file(./config.json):Parameters.projectValue}
+
+    ApiGateway:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: ${file(./config.json):Parameters.APIGatewayName}

@@ -1,0 +1,10 @@
+const CONSTANTS = {
+    'STATUS_CODE_OK': 200,
+    'STATUS_CODE_OK_CREATE': 201,
+    'STATUS_CODE_ERROR_500': 500,
+	'STATUS_CODE_ERROR_400': 400,
+}
+
+module.exports = {
+    CONSTANTS
+}

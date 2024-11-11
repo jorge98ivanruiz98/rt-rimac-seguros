@@ -1,0 +1,171 @@
+openapi: 3.0.0
+info:
+  title: Reto Técnico - API Documentación
+  description: API para gestionar datos usando SWAPI y DynamoDB.
+  version: 1.0.0
+
+servers:
+  - url: https://{api-id}.execute-api.{region}.amazonaws.com/dev
+    description: Servidor de API en AWS
+    variables:
+      api-id:
+        default: "tu-api-id"
+      region:
+        default: "us-east-1"
+
+paths:
+  /people:
+    get:
+      summary: Obtiene información de una persona desde SWAPI o DynamoDB
+      description: Este endpoint recupera los datos de una persona desde SWAPI o DynamoDB en función del ID proporcionado.
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID de la persona en SWAPI o DynamoDB
+      responses:
+        '200':
+          description: Datos de persona recuperados exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeopleResponse'
+        '400':
+          description: Solicitud incorrecta, falta el parámetro ID
+        '500':
+          description: Error interno al procesar la solicitud
+    post:
+      summary: Crea un registro de persona en DynamoDB
+      description: Este endpoint permite crear un nuevo registro de persona en DynamoDB.
+      requestBody:
+        description: Datos de la persona a crear
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeopleRequest'
+      responses:
+        '201':
+          description: Persona creada exitosamente en DynamoDB
+        '400':
+          description: Error en la solicitud, datos inválidos
+        '500':
+          description: Error interno al crear el elemento
+
+components:
+  schemas:
+    PeopleResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID de la persona
+        nombre:
+          type: string
+          description: Nombre de la persona
+        altura:
+          type: string
+          description: Altura de la persona
+        peso:
+          type: string
+          description: Peso de la persona
+        color_pelo:
+          type: string
+          description: Color del cabello
+        color_piel:
+          type: string
+          description: Color de la piel
+        color_ojos:
+          type: string
+          description: Color de los ojos
+        genero:
+          type: string
+          description: Género de la persona
+        nacimiento:
+          type: string
+          description: Año de nacimiento de la persona
+        planeta_natal:
+          type: string
+          description: URL del planeta natal de la persona en SWAPI
+        peliculas:
+          type: array
+          items:
+            type: string
+          description: Lista de URLs de películas en las que aparece la persona
+        especies:
+          type: array
+          items:
+            type: string
+          description: Lista de URLs de especies a las que pertenece la persona
+        vehiculos:
+          type: array
+          items:
+            type: string
+          description: Lista de URLs de vehículos que utiliza la persona
+        naves:
+          type: array
+          items:
+            type: string
+          description: Lista de URLs de naves espaciales que utiliza la persona
+        creado:
+          type: string
+          description: Fecha de creación del registro en SWAPI
+        editado:
+          type: string
+          description: Fecha de última edición del registro en SWAPI
+        url:
+          type: string
+          description: URL del recurso de la persona en SWAPI
+
+    PeopleRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          description: Nombre de la persona
+        altura:
+          type: string
+          description: Altura de la persona
+        peso:
+          type: string
+          description: Peso de la persona
+        color_pelo:
+          type: string
+          description: Color del cabello
+        color_piel:
+          type: string
+          description: Color de la piel
+        color_ojos:
+          type: string
+          description: Color de los ojos
+        genero:
+          type: string
+          description: Género de la persona
+        nacimiento:
+          type: string
+          description: Año de nacimiento de la persona
+        planeta_natal:
+          type: string
+          description: URL del planeta natal de la persona en SWAPI
+        peliculas:
+          type: array
+          items:
+            type: string
+          description: Lista de URLs de películas en las que aparece la persona
+        especies:
+          type: array
+          items:
+            type: string
+          description: Lista de URLs de especies a las que pertenece la persona
+        vehiculos:
+          type: array
+          items:
+            type: string
+          description: Lista de URLs de vehículos que utiliza la persona
+        naves:
+          type: array
+          items:
+            type: string
+          description: Lista de URLs de naves espaciales que utiliza la persona

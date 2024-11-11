@@ -1,0 +1,13 @@
+{
+    "Parameters": {
+        "LambdaFunctionPR-GetItem": "RIMAC-Get-Item",
+        "LambdaFunctionPR-CreateItem": "RIMAC-Create-Item",
+        "APIGatewayName": "RIMAC-API-SWAPI",
+        "DYNAMODB_TABLE": "RIMAC-TB-SAVE-People",
+        "TIMEOUT": 10,
+        "SWAPI_URL": "https://swapi.py4e.com/api",
+        "projectValue": "RIMAC-SEGUROS-PRUEBA-TECNICA",
+        "MaximumRetryAttempts": "1",
+        "MemorySize": "3000"
+    }
+}

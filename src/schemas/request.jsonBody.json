@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "nombre": { "$ref": "#/definitions/nonEmptyString" },
+      "altura": { "$ref": "#/definitions/nonEmptyString" },
+      "peso": { "$ref": "#/definitions/nonEmptyString" },
+      "color_pelo": { "$ref": "#/definitions/nonEmptyString" },
+      "color_piel": { "$ref": "#/definitions/nonEmptyString" }
+    },
+    "required": ["nombre", "altura", "peso"],
+    "definitions": {
+      "nonEmptyString": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+  
