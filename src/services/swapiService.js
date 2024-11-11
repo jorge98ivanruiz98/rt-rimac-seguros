@@ -1,25 +1,38 @@
-// src/services/swapiService.js
 const https = require('https');
 const { SWAPI_BASE_URL } = process.env;
 
 /**
  * Función para obtener información de una persona desde SWAPI
  * @param {string} id - El ID de la persona en SWAPI
+ * @param {Object} options - Opciones para timeout y reintentos
  * @returns {Promise<Object>} - Promesa que resuelve con los datos traducidos de la persona
  */
-const fetchPersonFromSWAPI = (id) => {
+const fetchPersonFromSWAPI = (id, options = { retry: 3, delay: 1000 }) => {
   const url = `${SWAPI_BASE_URL}/people/${id}/`;
 
   return new Promise((resolve, reject) => {
+    let attempts = 0;
+
     const makeRequest = (url) => {
       https.get(url, (response) => {
         let data = '';
 
-        // Manejo de redirecciones
+        // Manejo de redirecciones por si swapi no tenga la ruta correcta como "https o http" ó terminando su ruta /
         if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
-          // Redirecciona a la nueva ubicación
           console.log(`Redireccionando a ${response.headers.location}`);
           makeRequest(response.headers.location);
+          return;
+        }
+
+        // Manejo de error 503 con reintentos
+        if (response.statusCode === 503) {
+          attempts++;
+          if (attempts < options.retry) {
+            console.warn(`Error 503 recibido. Reintentando (${attempts}/${options.retry}) en ${options.delay}ms...`);
+            setTimeout(() => makeRequest(url), options.delay);
+          } else {
+            reject(new Error(`Error 503: Servicio SWAPI no disponible después de ${options.retry} intentos.`));
+          }
           return;
         }
 
